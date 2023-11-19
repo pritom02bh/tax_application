@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Data</title>
+</head>
+<body>
+    <h1>View Data</h1>
+    <ul id="dataList"></ul>
+
+    <script>
+        fetch('/view')
+            .then(response => response.json())
+            .then(data => {
+                const dataList = document.getElementById('dataList');
+                data.data.forEach(record => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = JSON.stringify(record);
+                    dataList.appendChild(listItem);
+                });
+            })
+            .catch(error => console.error('Error:', error));
+    </script>
+</body>
+</html>

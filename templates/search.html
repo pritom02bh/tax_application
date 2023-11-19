@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Records</title>
+</head>
+<body>
+    <h1>Search Records</h1>
+    <form method="post">
+        <label for="id">ID:</label>
+        <input type="text" name="id" id="id">
+        <label for="payment_date">Payment Date:</label>
+        <input type="text" name="payment_date" id="payment_date">
+        <button type="submit">Search</button>
+    </form>
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>Company</th>
+            <th>Amount</th>
+            <th>Payment Date</th>
+            <th>Status</th>
+            <th>Due Date</th>
+        </tr>
+        {% if records %}
+            {% for record in records %}
+            <tr>
+                <td>{{ record[0] }}</td>
+                <td>{{ record[1] }}</td>
+                <td>{{ record[2] }}</td>
+                <td>{{ record[3] }}</td>
+                <td>{{ record[4] }}</td>
+                <td>{{ record[5] }}</td>
+            </tr>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <td colspan="6">No records found</td>
+            </tr>
+        {% endif %}
+    </table>
+</body>
+</html>

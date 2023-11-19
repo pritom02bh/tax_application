@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tax Records</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Tax Records</h1>
+    
+    <div>
+        <h2>View Records</h2>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Company</th>
+                    <th>Amount</th>
+                    <th>Payment Date</th>
+                    <th>Status</th>
+                    <th>Due Date</th>
+                </tr>
+            </thead>
+            <tbody id="recordsBody"></tbody>
+        </table>
+    </div>
+
+    <div>
+        <h2>Search Records</h2>
+        <form id="searchForm">
+            <div class="form-group">
+                <label for="search_id">Search by ID:</label>
+                <input type="text" class="form-control" id="search_id" name="search_id">
+            </div>
+            <div class="form-group">
+                <label for="search_date">Search by Payment Date:</label>
+                <input type="date" class="form-control" id="search_date" name="search_date">
+            </div>
+            <button type="button" class="btn btn-primary" onclick="searchRecords()">Search</button>
+        </form>
+    </div>
+
+    <div>
+        <h2>Insert Record</h2>
+        <form id="insertForm">
+            <div class="form-group">
+                <label for="company">Company:</label>
+                <input type="text" class="form-control" id="company" name="company" required>
+            </div>
+            <div class="form-group">
+                <label for="amount">Amount:</label>
+                <input type="number" class="form-control" id="amount" name="amount" required>
+            </div>
+            <div class="form-group">
+                <label for="payment_date">Payment Date:</label>
+                <input type="date" class="form-control" id="payment_date" name="payment_date" required>
+            </div>
+            <div class="form-group">
+                <label for="status">Status:</label>
+                <input type="text" class="form-control" id="status" name="status" required>
+            </div>
+            <div class="form-group">
+                <label for="due_date">Due Date:</label>
+                <input type="date" class="form-control" id="due_date" name="due_date" required>
+            </div>
+            <button type="button" class="btn btn-success" onclick="insertRecord()">Insert</button>
+        </form>
+    </div>
+
+    <div>
+        <h2>Delete Record</h2>
+        <form id="deleteForm">
+            <div class="form-group">
+                <label for="delete_id">Enter ID to Delete:</label>
+                <input type="text" class="form-control" id="delete_id" name="delete_id" required>
+            </div>
+            <button type="button" class="btn btn-danger" onclick="deleteRecord()">Delete</button>
+        </form>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Load records on page load
+            loadRecords();
+
+            // Function to load records
+            function loadRecords() {
+                $.get('/get_records', function(records) {
+                    displayRecords(records);
+                });
+            }
+
+            // Function to display records in the table
+            function displayRecords(records) {
+                var tableBody = $('#recordsBody');
+                tableBody.empty();
+
+                records.forEach(function(record) {
+                    var row = '<tr>';
+                    row += '<td>' + record[0] + '</td>';
+                    row += '<td>' + record[1] + '</td>';
+                    row += '<td>' + record[2] + '</td>';
+                    row += '<td>' + record[3] + '</td>';
+                    row += '<td>' + record[4] + '</td>';
+                    row += '<td>' + record[5] + '</td>';
+                    row += '</tr>';
+                    tableBody.append(row);
+                });
+            }
+
+            // Function to search records
+            window.searchRecords = function() {
+                var search_id = $('#search_id').val();
+                var search_date = $('#search_date').val();
+
+                $.post('/search', {search_id: search_id, search_date: search_date}, function(records) {
+                    displayRecords(records);
+                });
+            }
+
+            // Function to insert record
+            window.insertRecord = function() {
+                var company = $('#company').val();
+                var amount = $('#amount').val();
+                var payment_date = $('#payment_date').val();
+                var status = $('#status').val();
+                var due_date = $('#due_date').val();
+
+                $.post('/insert', {company: company, amount: amount, payment_date: payment_date, status: status, due_date: due_date}, function(response) {
+                    if (response.success) {
+                        loadRecords(); // Reload records after insertion
+                        // Clear the form fields
+                        $('#company').val('');
+                        $('#amount').val('');
+                        $('#payment_date').val('');
+                        $('#status').val('');
+                        $('#due_date').val('');
+                    } else {
+                        alert('Error inserting record');
+                    }
+                });
+            }
+
+            // Function to delete record
+            window.deleteRecord = function() {
+                var delete_id = $('#delete_id').val();
+
+                $.ajax({
+                    url: '/delete/' + delete_id,
+                    type: 'DELETE',
+                    success: function(response) {
+                        if (response.success) {
+                            loadRecords(); // Reload records after deletion
+                            // Clear the form field
+                            $('#delete_id').val('');
+                        } else {
+                            alert('Error deleting record');
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
