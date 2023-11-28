@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tax Records</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    
     <style>
         body {
             background-color: #ececec;
@@ -14,9 +15,9 @@
         h1 {
             color: #3498db;
             text-align: center;
-            padding: 7px;
+            padding: 10px;
             background-color: #000000;
-            margin: 4;
+            margin: 0;
         }
 
         .container {
@@ -24,42 +25,34 @@
             justify-content: left;
             align-items: center;
             height: 49vh;
+            margin-bottom: 20px;
+        }
+
+        .search-container,
+        .insert-container,
+        .delete-container,
+        .calculate-container {
+            width: 40%;
+            padding: 20px;
+            margin-right: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         .search-container {
-            width: 40%;
-            padding: 22px;
             background-color: #3498db;
             color: #ffffff;
-            border-radius: 10px;
-            box-shadow: 0 8px 8px rgba(0, 0, 0, 0.1);
         }
 
-        .insert-container {
-            width: 63%;
-            padding: 19px;
+        .insert-container,
+        .calculate-container {
             background-color: #3498db;
             color: #ffffff;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         .delete-container {
-            width: 61%;
-            padding: 21px;
             background-color: #e74c3c;
             color: #ffffff;
-            border-radius: 13px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        
-        .calculate-container {
-            width: 59%;
-            padding: 23px;
-            background-color: #3498db;
-            color: #ffffff;
-            border-radius: 13px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         h2 {
@@ -75,10 +68,12 @@
             margin-bottom: 5px;
         }
 
-        input {
+        input,
+        select {
             width: 100%;
             padding: 8px;
             box-sizing: border-box;
+            margin-bottom: 15px;
         }
 
         button {
@@ -88,8 +83,10 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            display: block;
+            margin: 0 auto;
         }
-        
+
         .records-container {
             background-color: #f0f0f0;
             padding: 20px;
@@ -104,7 +101,8 @@
             border-collapse: collapse;
         }
 
-        .records-container table th, .records-container table td {
+        .records-container table th,
+        .records-container table td {
             border: 1px solid #ddd;
             padding: 8px;
             text-align: left;
@@ -421,8 +419,6 @@
                 taxResultTable.show();
             }
                         
-
-
 
         });
     </script>
