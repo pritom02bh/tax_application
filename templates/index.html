@@ -7,92 +7,244 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
+            background-color: #ececec;
             margin: 20px;
+        }
+
+        h1 {
+            color: #3498db;
+            text-align: center;
+            padding: 7px;
+            background-color: #000000;
+            margin: 4;
+        }
+
+        .container {
+            display: flex;
+            justify-content: left;
+            align-items: center;
+            height: 49vh;
+        }
+
+        .search-container {
+            width: 40%;
+            padding: 22px;
+            background-color: #3498db;
+            color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 8px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .insert-container {
+            width: 63%;
+            padding: 19px;
+            background-color: #3498db;
+            color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .delete-container {
+            width: 61%;
+            padding: 21px;
+            background-color: #e74c3c;
+            color: #ffffff;
+            border-radius: 13px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .calculate-container {
+            width: 59%;
+            padding: 23px;
+            background-color: #3498db;
+            color: #ffffff;
+            border-radius: 13px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #2ecc71;
+            color: #ffffff;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .records-container {
+            background-color: #f0f0f0;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .records-container table {
+            width: 100%;
+            margin-top: 10px;
+            border-collapse: collapse;
+        }
+
+        .records-container table th, .records-container table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        button:hover {
+            background-color: #27ae60;
         }
     </style>
 </head>
 <body>
-    <h1>Tax Records</h1>
+    <h1>Welcome to Tax Record Application</h1>
+
+    <!-- Add a notification div -->
+    <div id="notification" class="alert" role="alert" style="display:none;"></div>
+
+    <div class="records-container">
+                <h2>View Records</h2>
+                <button id="toggleViewButton" onclick="toggleView()">Hide View</button>
+                <table class="table table-bordered" id="recordsTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Company</th>
+                            <th>Amount</th>
+                            <th>Payment Date</th>
+                            <th>Status</th>
+                            <th>Due Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recordsBody"></tbody>
+                </table>
+            </div>
+
+    <div class="container">
+        <div class="calculate-container">
+            <h2>Calculate Tax</h2>
+            <form id="calculateTaxForm">
+                <div class="form-group">
+                    <label for="tax_rate">Tax Rate:</label>
+                    <input type="number" class="form-control" id="tax_rate" name="tax_rate" required>
+                </div>
+                <div class="form-group">
+                    <label for="company_calculator">Select Company:</label>
+                    <select class="form-control" id="company_calculator" name="company_calculator">
+                        <!-- Add the following option for each company in your database -->
+                        <option value="derm">derm</option>
+                        <option value="tek">tek</option>
+                        <!-- Add more options for other companies -->
+                    </select>
+                </div>
+                <button type="button" onclick="calculateTax()">Calculate Tax</button>
+            </form>
     
-    <div>
-        <h2>View Records</h2>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Company</th>
-                    <th>Amount</th>
-                    <th>Payment Date</th>
-                    <th>Status</th>
-                    <th>Due Date</th>
-                </tr>
-            </thead>
-            <tbody id="recordsBody"></tbody>
-        </table>
+            <!-- Display the result in a table -->
+            <table class="table table-bordered" id="taxResultTable" style="display:none;">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Company</th>
+                        <th>Total Amount</th>
+                        <th>Tax Due</th>
+                    </tr>
+                </thead>
+                <tbody id="taxResultBody"></tbody>
+            </table>
+        </div>
     </div>
 
-    <div>
-        <h2>Search Records</h2>
-        <form id="searchForm">
-            <div class="form-group">
-                <label for="search_id">Search by ID:</label>
-                <input type="text" class="form-control" id="search_id" name="search_id">
-            </div>
-            <div class="form-group">
-                <label for="search_date">Search by Payment Date:</label>
-                <input type="date" class="form-control" id="search_date" name="search_date">
-            </div>
-            <button type="button" class="btn btn-primary" onclick="searchRecords()">Search</button>
-        </form>
+
+    <div class="container">
+        <div class="search-container">
+            <h2>Search Records</h2>
+            <form id="searchForm">
+                <div class="form-group">
+                    <label for="search_id">Search by ID:</label>
+                    <input type="text" class="form-control" id="search_id" name="search_id">
+                </div>
+                <div class="form-group">
+                    <label for="search_date">Search by Payment Date:</label>
+                    <input type="date" class="form-control" id="search_date" name="search_date">
+                </div>
+                <button type="button" onclick="searchRecords()">Search</button>
+            </form>
+        </div>
     </div>
 
-    <div>
-        <h2>Insert Record</h2>
-        <form id="insertForm">
-            <div class="form-group">
-                <label for="company">Company:</label>
-                <input type="text" class="form-control" id="company" name="company" required>
-            </div>
-            <div class="form-group">
-                <label for="amount">Amount:</label>
-                <input type="number" class="form-control" id="amount" name="amount" required>
-            </div>
-            <div class="form-group">
-                <label for="payment_date">Payment Date:</label>
-                <input type="date" class="form-control" id="payment_date" name="payment_date" required>
-            </div>
-            <div class="form-group">
-                <label for="status">Status:</label>
-                <input type="text" class="form-control" id="status" name="status" required>
-            </div>
-            <div class="form-group">
-                <label for="due_date">Due Date:</label>
-                <input type="date" class="form-control" id="due_date" name="due_date" required>
-            </div>
-            <button type="button" class="btn btn-success" onclick="insertRecord()">Insert</button>
-        </form>
+    <div class="container">
+        <div class="insert-container">
+            <h2>Insert Record</h2>
+            <form id="insertForm">
+                <div class="form-group">
+                    <label for="company">Company:</label>
+                    <input type="text" class="form-control" id="company" name="company" required>
+                </div>
+                <div class="form-group">
+                    <label for="amount">Amount:</label>
+                    <input type="number" class="form-control" id="amount" name="amount" required>
+                </div>
+                <div class="form-group">
+                    <label for="payment_date">Payment Date:</label>
+                    <input type="date" class="form-control" id="payment_date" name="payment_date" required>
+                </div>
+                <div class="form-group">
+                    <label for="status">Status:</label>
+                    <input type="text" class="form-control" id="status" name="status" required>
+                </div>
+                <div class="form-group">
+                    <label for="due_date">Due Date:</label>
+                    <input type="date" class="form-control" id="due_date" name="due_date" required>
+                </div>
+                <button type="button" onclick="saveInsertRecord()">Save</button>
+            </form>
+        </div>
     </div>
 
-    <div>
-        <h2>Delete Record</h2>
-        <form id="deleteForm">
-            <div class="form-group">
-                <label for="delete_id">Enter ID to Delete:</label>
-                <input type="text" class="form-control" id="delete_id" name="delete_id" required>
-            </div>
-            <button type="button" class="btn btn-danger" onclick="deleteRecord()">Delete</button>
-        </form>
+    <div class="container">
+        <div class="delete-container">
+            <h2>Delete Record</h2>
+            <form id="deleteForm">
+                <div class="form-group">
+                    <label for="delete_id">Enter ID to Delete:</label>
+                    <input type="text" class="form-control" id="delete_id" name="delete_id" required>
+                </div>
+                <button type="button" onclick="saveDeleteRecord()">Save</button>
+            </form>
+        </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
+            var isViewVisible = true;
+
             // Load records on page load
             loadRecords();
 
             // Function to load records
             function loadRecords() {
-                $.get('/get_records', function(records) {
+                $.get('/get_records', function (records) {
                     displayRecords(records);
                 });
             }
@@ -102,7 +254,7 @@
                 var tableBody = $('#recordsBody');
                 tableBody.empty();
 
-                records.forEach(function(record) {
+                records.forEach(function (record) {
                     var row = '<tr>';
                     row += '<td>' + record[0] + '</td>';
                     row += '<td>' + record[1] + '</td>';
@@ -113,29 +265,54 @@
                     row += '</tr>';
                     tableBody.append(row);
                 });
+
+                // Show or hide the view based on the current state
+                $('#recordsTable').toggle(isViewVisible);
+            }
+
+            // Function to toggle the visibility of the view
+            window.toggleView = function () {
+                isViewVisible = !isViewVisible;
+                $('#recordsTable').toggle(isViewVisible);
+                $('#toggleViewButton').text(isViewVisible ? 'Hide View' : 'Show View');
+            }
+
+            // Function to display notifications
+            function showNotification(message, type) {
+                var notificationDiv = $('#notification');
+                notificationDiv.text(message);
+                notificationDiv.removeClass(); // Remove existing classes
+                notificationDiv.addClass('alert alert-' + type); // Add new class
+                notificationDiv.show();
+
+                // Hide the notification after 3 seconds
+                setTimeout(function () {
+                    notificationDiv.hide();
+                }, 15000);
             }
 
             // Function to search records
-            window.searchRecords = function() {
+            window.searchRecords = function () {
                 var search_id = $('#search_id').val();
                 var search_date = $('#search_date').val();
 
-                $.post('/search', {search_id: search_id, search_date: search_date}, function(records) {
+                $.post('/search', { search_id: search_id, search_date: search_date }, function (records) {
                     displayRecords(records);
                 });
             }
 
             // Function to insert record
-            window.insertRecord = function() {
+            window.insertRecord = function () {
                 var company = $('#company').val();
                 var amount = $('#amount').val();
                 var payment_date = $('#payment_date').val();
                 var status = $('#status').val();
                 var due_date = $('#due_date').val();
 
-                $.post('/insert', {company: company, amount: amount, payment_date: payment_date, status: status, due_date: due_date}, function(response) {
+                $.post('/insert', { company: company, amount: amount, payment_date: payment_date, status: status, due_date: due_date }, function (response) {
                     if (response.success) {
                         loadRecords(); // Reload records after insertion
+                        showNotification('Record inserted successfully', 'success');
                         // Clear the form fields
                         $('#company').val('');
                         $('#amount').val('');
@@ -149,15 +326,16 @@
             }
 
             // Function to delete record
-            window.deleteRecord = function() {
+            window.deleteRecord = function () {
                 var delete_id = $('#delete_id').val();
 
                 $.ajax({
                     url: '/delete/' + delete_id,
                     type: 'DELETE',
-                    success: function(response) {
+                    success: function (response) {
                         if (response.success) {
                             loadRecords(); // Reload records after deletion
+                            showNotification('Record deleted successfully', 'danger');
                             // Clear the form field
                             $('#delete_id').val('');
                         } else {
@@ -166,6 +344,86 @@
                     }
                 });
             }
+
+            // Function to save inserted record
+            window.saveInsertRecord = function () {
+                insertRecord(); // Trigger insert action
+                showNotification('Changes saved successfully', 'success');
+                setTimeout(function () {
+                    location.reload(); // Refresh the page after saving changes
+                }, 15000); // Delay for 3 seconds before refreshing
+            }
+
+            // Function to save deleted record
+            window.saveDeleteRecord = function () {
+                deleteRecord(); // Trigger delete action
+                showNotification('Changes saved successfully', 'success');
+                setTimeout(function () {
+                    location.reload(); // Refresh the page after saving changes
+                }, 15000); // Delay for 3 seconds before refreshing
+            }
+
+            // Function to calculate tax
+            window.calculateTax = function () {
+                var tax_rate = $('#tax_rate').val();
+                var company_calculator = $('#company_calculator').val();
+
+                $.post('/calculate_tax', { tax_rate: tax_rate, company_calculator: company_calculator }, function (results) {
+                    displayTaxResult(results);
+                });
+            }
+
+            // Function to calculate tax
+            window.calculateTax = function () {
+                var tax_rate = $('#tax_rate').val();
+                var company_calculator = $('#company_calculator').val();
+
+                $.post('/calculate_tax', { tax_rate: tax_rate, company_calculator: company_calculator }, function (results) {
+                    displayTaxResult(results, tax_rate);
+                });
+            }
+
+            // Function to display tax calculation result
+            function displayTaxResult(result, tax_rate) {
+                var taxResultTable = $('#taxResultTable');
+                var taxResultBody = $('#taxResultBody');
+
+                taxResultBody.empty();
+
+                // Display company data
+                result.company_data.forEach(function (row, index) {
+                    var dataRow = '<tr>';
+                    dataRow += '<td>' + row[0] + '</td>';
+                    dataRow += '<td>' + row[1] + '</td>';
+                    dataRow += '<td>$' + row[2].toFixed(2) + '</td>';
+                    dataRow += '</tr>';
+                    taxResultBody.append(dataRow);
+                });
+
+                // Calculate tax due using the provided tax rate
+                var tax_due = result.total_amount * (tax_rate / 100);
+
+                // Display total amount and tax due
+                var totalRow = '<tr>';
+                totalRow += '<td colspan="2"><strong>Total Amount</strong></td>';
+                totalRow += '<td>$' + result.total_amount.toFixed(2) + '</td>';
+                totalRow += '</tr>';
+
+                var taxDueRow = '<tr>';
+                taxDueRow += '<td colspan="2"><strong>Tax Due (' + tax_rate + '%)</strong></td>';
+                taxDueRow += '<td>$' + tax_due.toFixed(2) + '</td>';
+                taxDueRow += '</tr>';
+
+                taxResultBody.append(totalRow);
+                taxResultBody.append(taxDueRow);
+
+                // Show the result table
+                taxResultTable.show();
+            }
+                        
+
+
+
         });
     </script>
 </body>
