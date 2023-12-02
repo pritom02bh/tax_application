@@ -89,17 +89,7 @@ def delete(record_id):
     conn.close()
     return jsonify({'success': True})
 
-# New route for calculating tax
-@app.route('/calculate_tax', methods=['POST'])
-def calculate_tax():
-    tax_rate = float(request.form.get('tax_rate'))
-    company_calculator = request.form.get('company_calculator')
 
-    # Fetch all rows for the selected company
-    conn = sqlite3.connect(DATABASE)
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM tax_record WHERE company=?", (company_calculator,))
-    company_data = cursor.fetchall()
 
     # Calculate the total amount for the company
     total_amount = sum(row[2] for row in company_data)
