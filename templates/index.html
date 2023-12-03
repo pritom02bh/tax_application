@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tax Records</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
     <style>
         body {
             background-color: #ececec;
@@ -147,13 +148,8 @@
                     <input type="number" class="form-control" id="tax_rate" name="tax_rate" required>
                 </div>
                 <div class="form-group">
-                    <label for="company_calculator">Select Company:</label>
-                    <select class="form-control" id="company_calculator" name="company_calculator">
-                        <!-- Add the following option for each company in your database -->
-                        <option value="derm">derm</option>
-                        <option value="tek">tek</option>
-                        <!-- Add more options for other companies -->
-                    </select>
+                    <label for="selected_date">Select Date:</label>
+                    <input type="date" class="form-control" id="selected_date" name="selected_date" required>
                 </div>
                 <button type="button" onclick="calculateTax()">Calculate Tax</button>
             </form>
@@ -172,6 +168,9 @@
             </table>
         </div>
     </div>
+
+    <!-- Notification -->
+    <div id="notification" class="alert alert-success" role="alert" style="display:none;"></div>
 
 
     <div class="container">
@@ -362,22 +361,12 @@
                 }, 15000); // Delay for 3 seconds before refreshing
             }
 
-            // Function to calculate tax
+           // Function to calculate tax
             window.calculateTax = function () {
                 var tax_rate = $('#tax_rate').val();
-                var company_calculator = $('#company_calculator').val();
+                var selected_date = $('#selected_date').val();
 
-                $.post('/calculate_tax', { tax_rate: tax_rate, company_calculator: company_calculator }, function (results) {
-                    displayTaxResult(results);
-                });
-            }
-
-            // Function to calculate tax
-            window.calculateTax = function () {
-                var tax_rate = $('#tax_rate').val();
-                var company_calculator = $('#company_calculator').val();
-
-                $.post('/calculate_tax', { tax_rate: tax_rate, company_calculator: company_calculator }, function (results) {
+                $.post('/calculate_tax', { tax_rate: tax_rate, selected_date: selected_date }, function (results) {
                     displayTaxResult(results, tax_rate);
                 });
             }
@@ -419,6 +408,20 @@
                 // Show the result table
                 taxResultTable.show();
             }
+
+                // Function to display notifications
+                function showNotification(message, type) {
+                    var notificationDiv = $('#notification');
+                    notificationDiv.text(message);
+                    notificationDiv.removeClass(); // Remove existing classes
+                    notificationDiv.addClass('alert alert-' + type); // Add new class
+                    notificationDiv.show();
+
+                    // Hide the notification after 3 seconds
+                    setTimeout(function () {
+                        notificationDiv.hide();
+                    }, 15000); // Adjust the time as needed
+                }
                         
 
         });

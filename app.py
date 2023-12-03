@@ -90,24 +90,25 @@ def delete(record_id):
     return jsonify({'success': True})
 
 # New route for calculating tax
+
 @app.route('/calculate_tax', methods=['POST'])
 def calculate_tax():
     tax_rate = float(request.form.get('tax_rate'))
-    company_calculator = request.form.get('company_calculator')
+    selected_date = request.form.get('selected_date')
 
-    # Fetch all rows for the selected company
     conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM tax_record WHERE company=?", (company_calculator,))
+
+    cursor.execute("SELECT * FROM tax_record WHERE payment_date=?", (selected_date,))
     company_data = cursor.fetchall()
 
-    # Calculate the total amount for the company
+    if not company_data:
+        conn.close()
+        return jsonify({'error': 'No records found for the selected date'})
+
     total_amount = sum(row[2] for row in company_data)
+    tax_due = total_amount * tax_rate / 100
 
-    # Calculate the tax amount
-    tax_due = total_amount * tax_rate
-
-    # Prepare the result
     result = {
         'company_data': company_data,
         'total_amount': total_amount,
@@ -117,6 +118,7 @@ def calculate_tax():
     conn.close()
 
     return jsonify(result)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
