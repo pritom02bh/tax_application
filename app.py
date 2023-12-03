@@ -99,7 +99,7 @@ def calculate_tax():
     conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM tax_record WHERE payment_date=?", (selected_date,))
+    cursor.execute("SELECT * FROM tax_record WHERE due_date=?", (selected_date,))
     company_data = cursor.fetchall()
 
     if not company_data:

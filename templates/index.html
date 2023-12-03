@@ -119,7 +119,8 @@
     <h1>Welcome to Tax Record Application</h1>
 
     <!-- Add a notification div -->
-    <div id="notification" class="alert" role="alert" style="display:none;"></div>
+    <div id="notification" class="alert alert-success" role="alert" style="display:none; position: fixed; top: 10px; right: 10px; z-index: 1000;"></div>
+
 
     <div class="records-container">
                 <h2>View Records</h2>
@@ -139,6 +140,8 @@
                 </table>
             </div>
 
+ <!-- Calculate Tax rate -->
+
     <div class="container">
         <div class="calculate-container">
             <h2>Calculate Tax</h2>
@@ -148,7 +151,7 @@
                     <input type="number" class="form-control" id="tax_rate" name="tax_rate" required>
                 </div>
                 <div class="form-group">
-                    <label for="selected_date">Select Date:</label>
+                    <label for="selected_date">Select Due Date:</label>
                     <input type="date" class="form-control" id="selected_date" name="selected_date" required>
                 </div>
                 <button type="button" onclick="calculateTax()">Calculate Tax</button>
@@ -161,7 +164,7 @@
                         <th>ID</th>
                         <th>Company</th>
                         <th>Total Amount</th>
-                        <th>Tax Due</th>
+                        <th>Status</th>
                     </tr>
                 </thead>
                 <tbody id="taxResultBody"></tbody>
@@ -283,7 +286,7 @@
                 notificationDiv.addClass('alert alert-' + type); // Add new class
                 notificationDiv.show();
 
-                // Hide the notification after 3 seconds
+                // Hide the notification after 15 seconds
                 setTimeout(function () {
                     notificationDiv.hide();
                 }, 15000);
@@ -368,6 +371,7 @@
 
                 $.post('/calculate_tax', { tax_rate: tax_rate, selected_date: selected_date }, function (results) {
                     displayTaxResult(results, tax_rate);
+                    showNotification('Tax Calculated successfully', 'success');
                 });
             }
 
@@ -384,6 +388,7 @@
                     dataRow += '<td>' + row[0] + '</td>';
                     dataRow += '<td>' + row[1] + '</td>';
                     dataRow += '<td>$' + row[2].toFixed(2) + '</td>';
+                    dataRow += '<td>' + row[4] + '</td>';
                     dataRow += '</tr>';
                     taxResultBody.append(dataRow);
                 });
