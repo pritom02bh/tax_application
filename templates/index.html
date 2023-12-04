@@ -16,13 +16,13 @@
         h1 {
             color: #3498db;
             text-align: center;
-            padding: 10px;
+            padding: 13px;
             background-color: #000000;
             margin: 10;
         }
     
         .container {
-            margin-bottom: 20px;
+            margin-bottom: 26px;
         }
     
         .section-container {
@@ -84,11 +84,11 @@
         }
     
         button {
-            background-color: #2ecc71;
+            background-color: #000000;
             color: #ffffff;
-            padding: 10px 15px;
+            padding: 15px 35px;
             border: none;
-            border-radius: 5px;
+            border-radius: 15px;
             cursor: pointer;
             display: block;
             margin: 0 auto;
@@ -101,7 +101,7 @@
         .records-container table,
         .result-container table {
             width: 100%;
-            margin-top: 10px;
+            margin-top: 15px;
             border-collapse: collapse;
         }
     
@@ -110,7 +110,7 @@
         .result-container table th,
         .result-container table td {
             border: 1px solid #ddd;
-            padding: 8px;
+            padding: 15px;
             text-align: left;
         }
     </style>
@@ -352,7 +352,7 @@
                 showNotification('Changes saved successfully', 'success');
                 setTimeout(function () {
                     location.reload(); // Refresh the page after saving changes
-                }, 15000); // Delay for 3 seconds before refreshing
+                }, 15000); // Delay for 15 seconds before refreshing
             }
 
             // Function to save deleted record
@@ -418,14 +418,14 @@
                 function showNotification(message, type) {
                     var notificationDiv = $('#notification');
                     notificationDiv.text(message);
-                    notificationDiv.removeClass(); // Remove existing classes
-                    notificationDiv.addClass('alert alert-' + type); // Add new class
+                    notificationDiv.removeClass();
+                    notificationDiv.addClass('alert alert-' + type); 
                     notificationDiv.show();
 
-                    // Hide the notification after 3 seconds
+                    // Notification Time
                     setTimeout(function () {
                         notificationDiv.hide();
-                    }, 15000); // Adjust the time as needed
+                    }, 15000); 
                 }
                         
 
