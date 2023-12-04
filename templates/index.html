@@ -207,7 +207,7 @@
                 </div>
                 <div class="form-group">
                     <label for="payment_date">Payment Date:</label>
-                    <input type="date" class="form-control" id="payment_date" name="payment_date" required>
+                    <input type="date" class="form-control" id="payment_date" name="payment_date">
                 </div>
                 <div class="form-group">
                     <label for="status">Status:</label>
@@ -306,7 +306,7 @@
             window.insertRecord = function () {
                 var company = $('#company').val();
                 var amount = $('#amount').val();
-                var payment_date = $('#payment_date').val();
+                var payment_date = $('#payment_date').val() || null;
                 var status = $('#status').val();
                 var due_date = $('#due_date').val();
 
@@ -418,11 +418,11 @@
                 function showNotification(message, type) {
                     var notificationDiv = $('#notification');
                     notificationDiv.text(message);
-                    notificationDiv.removeClass();
-                    notificationDiv.addClass('alert alert-' + type); 
+                    notificationDiv.removeClass(); // Remove existing classes
+                    notificationDiv.addClass('alert alert-' + type); // Add new class
                     notificationDiv.show();
 
-                    // Notification Time
+                    // Notification
                     setTimeout(function () {
                         notificationDiv.hide();
                     }, 15000); 

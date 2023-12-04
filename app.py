@@ -57,6 +57,7 @@ def search():
     conn.close()
     return jsonify(records)
 
+
 @app.route('/insert', methods=['POST'])
 def insert():
     company = request.form.get('company')
@@ -66,19 +67,31 @@ def insert():
     due_date = request.form.get('due_date')
 
     try:
-        # Convert payment_date and due_date to datetime objects
-        payment_date = datetime.strptime(payment_date, '%Y-%m-%d').date()
+        # Convert payment_date and due_date to datetime objects if provided
+        if payment_date:
+            payment_date = datetime.strptime(payment_date, '%Y-%m-%d').date()
+
         due_date = datetime.strptime(due_date, '%Y-%m-%d').date()
     except ValueError:
         return jsonify({'error': 'Invalid date format'})
 
     conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()
-    cursor.execute("INSERT INTO tax_record (company, amount, payment_date, status, due_date) VALUES (?, ?, ?, ?, ?)",
-                   (company, amount, payment_date, status, due_date))
+
+    if payment_date:
+        # Insert with payment_date if provided
+        cursor.execute("INSERT INTO tax_record (company, amount, payment_date, status, due_date) VALUES (?, ?, ?, ?, ?)",
+                    (company, amount, payment_date, status, due_date))
+    else:
+        # Insert without payment_date
+        cursor.execute("INSERT INTO tax_record (company, amount, status, due_date) VALUES (?, ?, ?, ?)",
+                    (company, amount, status, due_date))
+
     conn.commit()
     conn.close()
     return jsonify({'success': True})
+
+
 
 @app.route('/delete/<int:record_id>', methods=['DELETE'])
 def delete(record_id):
