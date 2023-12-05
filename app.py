@@ -132,6 +132,43 @@ def calculate_tax():
 
     return jsonify(result)
 
+@app.route('/get_record/<int:record_id>')
+def get_record(record_id):
+    conn = sqlite3.connect(DATABASE)
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM tax_record WHERE id=?", (record_id,))
+    record = cursor.fetchone()
+    conn.close()
+    return jsonify(record) if record else jsonify({'error': 'Record not found'})
+
+# Add a new route to update data
+@app.route('/update/<int:record_id>', methods=['PUT'])
+def update_record(record_id):
+    company = request.form.get('company')
+    amount = request.form.get('amount')
+    payment_date = request.form.get('payment_date')
+    status = request.form.get('status')
+    due_date = request.form.get('due_date')
+
+    try:
+        # Convert payment_date and due_date to datetime objects if provided
+        if payment_date:
+            payment_date = datetime.strptime(payment_date, '%Y-%m-%d').date()
+
+        due_date = datetime.strptime(due_date, '%Y-%m-%d').date()
+    except ValueError:
+        return jsonify({'error': 'Invalid date format'})
+
+    conn = sqlite3.connect(DATABASE)
+    cursor = conn.cursor()
+
+    cursor.execute("UPDATE tax_record SET company=?, amount=?, payment_date=?, status=?, due_date=? WHERE id=?",
+                (company, amount, payment_date, status, due_date, record_id))
+
+    conn.commit()
+    conn.close()
+    return jsonify({'success': True})
+
 
 if __name__ == '__main__':
     app.run(debug=True)

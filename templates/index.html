@@ -33,6 +33,7 @@
         }
     
         /* Different padding for each section container */
+        .update-container,
         .search-container,
         .insert-container{
             padding: 20px;
@@ -90,6 +91,17 @@
             box-sizing: border-box;
             margin-bottom: 15px;
         }
+
+        .footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background-color: #09373a;
+            color: white;
+            text-align: center;
+            padding: 15px 0;
+            animation: slideIn 1s ease-in-out;
+        }
     
         button {
             background-color: #000000;
@@ -105,7 +117,25 @@
         button:hover {
             background-color: #27ae60;
         }
+        
+
+        #refreshButton {
+            position: fixed;
+            top: 189px;
+            right: 130px;
+            z-index: 1000;
+            background-color: #27ae60;
+            color: #ffffff;
+            padding: 15px 18px;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+        }
     
+        #refreshButton:hover {
+            background-color: #27ae60;
+        }
+        
         .records-container table,
         .result-container table {
             width: 100%;
@@ -147,6 +177,9 @@
                     <tbody id="recordsBody"></tbody>
                 </table>
             </div>
+    
+
+    <button id="refreshButton" onclick="refreshPage()">Refresh Page</button>
 
  <!-- Calculate Tax rate -->
 
@@ -241,6 +274,49 @@
                 <button type="button" onclick="saveDeleteRecord()">Save</button>
             </form>
         </div>
+    </div>
+
+
+    <!-- Add an Update Container -->
+    <div class="container">
+        <div class="update-container">
+            <h2>Update Record</h2>
+            <form id="updateForm">
+                <div class="form-group">
+                    <label for="update_id">Enter ID to Update:</label>
+                    <input type="text" class="form-control" id="update_id" name="update_id" required>
+                </div>
+                <button type="button" onclick="getRecordForUpdate()">Get Record</button>
+                <div id="updateRecordForm" style="display:none;">
+                    <div class="form-group">
+                        <label for="update_company">Company:</label>
+                        <input type="text" class="form-control" id="update_company" name="update_company" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="update_amount">Amount:</label>
+                        <input type="number" class="form-control" id="update_amount" name="update_amount" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="update_payment_date">Payment Date:</label>
+                        <input type="date" class="form-control" id="update_payment_date" name="update_payment_date">
+                    </div>
+                    <div class="form-group">
+                        <label for="update_status">Status:</label>
+                        <input type="text" class="form-control" id="update_status" name="update_status" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="update_due_date">Due Date:</label>
+                        <input type="date" class="form-control" id="update_due_date" name="update_due_date" required>
+                    </div>
+                    <button type="button" onclick="saveUpdateRecord()">Save Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    
+    <div id="footer">
+        <p>&copy; 2023 Developed by Team The Binary Buddies. All rights reserved.</p>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
@@ -437,7 +513,92 @@
                 }
                         
 
-        });
+                });
+
+
+            // Function to get record for update
+            window.getRecordForUpdate = function () {
+                var update_id = $('#update_id').val();
+
+                $.get('/get_record/' + update_id, function (record) {
+                    if ('error' in record) {
+                        alert(record.error);
+                    } else {
+                        // Populate the update form with fetched data
+                        $('#update_company').val(record[1]);
+                        $('#update_amount').val(record[2]);
+                        $('#update_payment_date').val(record[3]);
+                        $('#update_status').val(record[4]);
+                        $('#update_due_date').val(record[5]);
+
+                        // Show the update form
+                        $('#updateRecordForm').show();
+                    }
+                });
+            }
+
+            // Function to save updated record
+        window.saveUpdateRecord = function () {
+            var update_id = $('#update_id').val();
+            var update_company = $('#update_company').val();
+            var update_amount = $('#update_amount').val();
+            var update_payment_date = $('#update_payment_date').val() || null;
+            var update_status = $('#update_status').val();
+            var update_due_date = $('#update_due_date').val();
+
+            $.ajax({
+                url: '/update/' + update_id,
+                type: 'PUT',
+                data: {
+                    company: update_company,
+                    amount: update_amount,
+                    payment_date: update_payment_date,
+                    status: update_status,
+                    due_date: update_due_date
+                },
+                success: function (response) {
+                    if (response.success) {
+                        showNotification('Record updated successfully', 'success');
+                        $('#updateRecordForm').hide(); // Hide the update form
+                        // Reload records after update
+                        loadRecords(function () {
+                            $('#toggleViewButton').text('Hide View'); // Make sure the view is visible
+                        });
+                    } else {
+                        showNotification('Error updating record', 'danger');
+                    }
+                }
+            });
+        }
+
+        // Function to load records
+        function loadRecords(callback) {
+            $.get('/get_records', function (records) {
+                displayRecords(records);
+                if (typeof callback === 'function') {
+                    callback();
+                }
+            });
+        }
+
+        window.refreshPage = function () {
+            location.reload();
+            // Scroll to the top with smooth scrolling
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
+        }
+
+        // Function to display floating notifications
+        function showNotification(message, type) {
+            var notificationDiv = $('<div class="alert alert-' + type + '" role="alert"></div>');
+            notificationDiv.text(message);
+            notificationDiv.appendTo('body');
+            // Remove the notification after 5 seconds
+            setTimeout(function () {
+                notificationDiv.remove();
+            }, 5000);
+        }
+
     </script>
 </body>
 </html>
