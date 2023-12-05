@@ -49,7 +49,7 @@ def search():
     if search_id:
         cursor.execute("SELECT * FROM tax_record WHERE id=?", (search_id,))
     elif search_date:
-        cursor.execute("SELECT * FROM tax_record WHERE payment_date=?", (search_date,))
+        cursor.execute("SELECT * FROM tax_record WHERE due_date=?", (search_date,))
     else:
         return jsonify([])
 
